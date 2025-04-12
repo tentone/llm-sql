@@ -8,5 +8,8 @@
     },
     "http": {
         "port": 8080
+    },
+    "llm": {
+        "token": "token"
     }
 }
