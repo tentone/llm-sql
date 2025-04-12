@@ -1,7 +1,6 @@
 # LLM SQL
  - LLM connected with a SQL database for natural language query
  - Ask SQL for any information about its content
- - [AnythingLLM](https://anythingllm.com/desktop) used to deploy LLM that.
  - Safeguards agains update/delete operations by analysing transaction before commit.
 
 ## How It Works
@@ -26,9 +25,7 @@
    ```
  
 ## Setup
- - Install [AnythingLLM](https://anythingllm.com/desktop)
- - Setup a LLM connection in AnythingLLM (e.g. OpenAI or local LLM)
-   -  [Gemma 3](https://blog.google/technology/developers/gemma-3/) works well for generating SQL queries
+ - Get a API key from [OpenAI](https://platform.openai.com/signup)
  - Clone the repository and install [Poetry](https://python-poetry.org/docs/#installation)
  - Install dependencies with Poetry
    ```bash
