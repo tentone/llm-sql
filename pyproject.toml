@@ -12,6 +12,7 @@ dependencies = []
 [tool.poetry.group.dev.dependencies]
 pandas = "2.2.3"
 pypyodbc = "1.3.6"
+fastapi = "0.115.12"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

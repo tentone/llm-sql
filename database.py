@@ -18,7 +18,6 @@ class Database:
                                            f"Database={self.config.database.database};"
                                            f"uid={self.config.database.user};"
                                            f"pwd={self.config.database.password}")
-        
     def close(self)-> None:
         if self.connection:
             self.connection.close()

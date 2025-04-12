@@ -10,6 +10,11 @@ class DatabaseConfig:
 
 class HttpConfig:
     port = 8080
+    host = "0.0.0.0"
+
+class LLMConfig:
+    address = None
+    token = None
 
 class Config:
     # Database configuration
@@ -32,5 +37,13 @@ class Config:
 
             self.http = HttpConfig()
             self.http.port = config['http']['port']
+            self.http.host = config['http']['host']
+
+            self.llm = LLMConfig()
+            self.llm.address = config['llm']['address']
+            self.llm.token = config['llm']['token']
+
+
+
             
 

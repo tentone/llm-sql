@@ -1,15 +1,19 @@
-import pypyodbc 
-import pandas as pd
+import database
 import config
+import api
 
 cfg = config.Config()
 cfg.load('config.json')
 
-db = pypyodbc.connect("Driver={ODBC Driver 18 for SQL Server};"\
-                        "Server=localhost;"\
-                        "Database=database;"\
-                        "uid=user;"\
-                        "pwd=password")
+db = database.Database(cfg)
+db.connect()
+
+result = db.query("SELECT * FROM your_table")
+for row in result:
+    print(row)
 
 
-df = pd.read_sql_query('select * from table', db)
+api = api.API(cfg)
+api.run()
+
+
