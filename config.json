@@ -5,5 +5,8 @@
         "user": "your_username",
         "password": "your_password",
         "database": "your_database"
+    },
+    "http": {
+        "port": 8080
     }
 }
