@@ -13,7 +13,6 @@ class HttpConfig:
     host = "0.0.0.0"
 
 class LLMConfig:
-    address = None
     token = None
 
 class Config:
@@ -40,7 +39,6 @@ class Config:
             self.http.host = config['http']['host']
 
             self.llm = LLMConfig()
-            self.llm.address = config['llm']['address']
             self.llm.token = config['llm']['token']
 
 
