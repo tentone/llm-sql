@@ -8,10 +8,8 @@ cfg.load('config.json')
 db = database.Database(cfg)
 db.connect()
 
-result = db.query("SELECT * FROM your_table")
-for row in result:
-    print(row)
-
+structure = db.database_structure()
+print(structure)
 
 api = api.API(cfg)
 api.run()

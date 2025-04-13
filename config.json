@@ -5,6 +5,9 @@
         "user": "your_username",
         "password": "your_password",
         "database": "your_database"
+        "exclude": [],
+        "include": [],
+        "sampleData": false
     },
     "http": {
         "host": "0.0.0.0",

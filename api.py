@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 import uvicorn
+import config
 
 class API:
+    cfg: config.Config
 
-    def __init__(self, config):
-        self.config = config
+    app: FastAPI
+
+    def __init__(self, cfg: config.Config):
+        self.cfg = cfg
         self.app = FastAPI()
         self.setup_routes()
 
@@ -14,6 +18,5 @@ class API:
             return {"Hello": "World"}
 
     def run(self):
-        
-        uvicorn.run(self.app, host=self.config.host, port=self.config.port)
+        uvicorn.run(self.app, host=self.cfg.http.host, port=self.cfg.http.port)
 

@@ -3,10 +3,13 @@ import json
 
 class DatabaseConfig:
     host = None
-    port = None
+    port = 1433
     user = None
     password = None
     database = None
+    include = []
+    exclude = []
+    sample_data = False
 
 class HttpConfig:
     port = 8080
@@ -33,13 +36,16 @@ class Config:
             self.database.user = config['database']['user']
             self.database.password = config['database']['password']
             self.database.database = config['database']['database']
+            self.database.include = config['database']['include']
+            self.database.exclude = config['database']['exclude']
+            self.database.sample_data = config['database']['sampleData']
 
             self.http = HttpConfig()
             self.http.port = config['http']['port']
             self.http.host = config['http']['host']
 
             self.llm = LLMConfig()
-            self.llm.token = config['llm']['token']
+            self.llm.token = config['openai']['token']
 
 
 
