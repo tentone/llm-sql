@@ -108,7 +108,14 @@ class Database:
                     "fk_table": r['fk_table'] if r['fk_table'] is not None else None,
                     "fk_column": r['fk_column'] if r['fk_column'] is not None else None,
                 })
-    
+
+        if self.cfg.database.sample_data:
+            # Sample data for each table
+            for table in tables.keys():
+                sample_query = f"SELECT TOP 1 * FROM {table}"
+                sample_data = self.query(sample_query)
+                tables[table].append({"sample": sample_data})
+
         # Prepare the prompt for the LLM
         prompt = "The database has the following tables and columns:\n\n"
         for table, columns in tables.items():
@@ -122,6 +129,10 @@ class Database:
                     if column['fk_table']:
                         prompt += f" - {column['fk_table']}({column['fk_column']})"
                 prompt += "\n"
+
+            # TODO <SAMPLE DATA>
+
+            
             prompt += "\n"
 
         return prompt
