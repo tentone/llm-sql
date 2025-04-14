@@ -27,14 +27,14 @@ class Database:
             self.conn.close()
             self.conn = None
     
-    def query(self, sql)-> list[any]:
+    def query(self, sql: str)-> list[any]:
         if not self.conn:
             raise Exception("Database connection is not established.")
         
         cursor = self.conn.cursor()
-        cursor['execute'](sql)
-        result = cursor['fetchall']()
-        cursor['close']()
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        cursor.close()
         return result
 
     def database_structure(self)-> None:
@@ -68,14 +68,15 @@ class Database:
         cursor = self.conn.cursor()
         cursor.execute(query)
         records = cursor.fetchall()
-        
+        cursor.close()
+
         # List to store the table names and their columns
         tables: map[any] = {}
 
         # Iterate through the records and build the table structure
         for r in records:
             # Check if table is included in the include list
-            if len(self.cfg.database.include) == 0 or not any(re.match(pattern, r['table_name']) for pattern in self.cfg.database.include):
+            if len(self.cfg.database.include) != 0 and not any(re.match(pattern, r['table_name']) for pattern in self.cfg.database.include):
                 continue
 
             # Check if the table name matches any of the exclusion patterns
@@ -106,15 +107,8 @@ class Database:
                     "pk": False if r['index_name'] is None else True if "pk" in r['index_name'] else False,
                     "fk": False if r['fk_name'] is None else True,
                     "fk_table": r['fk_table'] if r['fk_table'] is not None else None,
-                    "fk_column": r['fk_column'] if r['fk_column'] is not None else None,
+                    "fk_column": r['fk_column'] if r['fk_column'] is not None else None
                 })
-
-        if self.cfg.database.sample_data:
-            # Sample data for each table
-            for table in tables.keys():
-                sample_query = f"SELECT TOP 1 * FROM {table}"
-                sample_data = self.query(sample_query)
-                tables[table].append({"sample": sample_data})
 
         # Prepare the prompt for the LLM
         prompt = "The database has the following tables and columns:\n\n"
@@ -130,9 +124,16 @@ class Database:
                         prompt += f" - {column['fk_table']}({column['fk_column']})"
                 prompt += "\n"
 
-            # TODO <SAMPLE DATA>
-
+            if self.cfg.database.sample_data:
+                # Sample data for each table
+                try:
+                    sample_query = f"SELECT TOP 1 * FROM {table} FOR JSON PATH, WITHOUT_ARRAY_WRAPPER;"
+                    sample_data = self.query(sample_query)
+                    if len(sample_data) > 0:
+                        prompt += f" - Sample data: {sample_data[0][0]}"
+                except Exception as e:
+                    pass
             
-            prompt += "\n"
+            prompt += "\n\n"
 
         return prompt
