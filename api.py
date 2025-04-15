@@ -13,10 +13,16 @@ class API:
         self.setup_routes()
 
     def setup_routes(self):
+        """
+        Set up the API routes here.
+        """
         @self.app.get("/")
-        def read_root():
+        def hello():
             return {"Hello": "World"}
 
     def run(self):
+        """
+        Start the http server
+        """
         uvicorn.run(self.app, host=self.cfg.http.host, port=self.cfg.http.port)
 
