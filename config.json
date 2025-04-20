@@ -4,7 +4,7 @@
         "port": 5432,
         "user": "your_username",
         "password": "your_password",
-        "database": "your_database"
+        "database": "your_database",
         "exclude": ["sys.*"],
         "include": [],
         "sampleData": true
