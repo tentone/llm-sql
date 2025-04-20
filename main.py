@@ -1,9 +1,9 @@
 import os
 import database
 import config
-import api
 import logging
 import llm
+import api
 
 logging.info("Read configuration file")
 cfg = config.Config()
@@ -28,15 +28,15 @@ f = open("prompt.txt", "r")
 initial_prompt = f.read()
 
 logging.info("Connect to OpenAPI service")
-l = llm.LLM(cfg, "gpt-4o-mini")
-l.models()
+l = llm.LLMModel(cfg, "gpt-4o-mini")
+# l.models()
 
 c = l.create_chat()
-# c.dev_message(initial_prompt)
+c.dev_message(initial_prompt + structure)
 c.prompt("Hello")
 
-# logging.info("Starting API service")
-# api = api.API(cfg)
-# api.run()
+logging.info("Starting API service")
+api = api.API(cfg)
+api.run()
 
 

@@ -7,9 +7,9 @@
  - The LLM model is teached to understand the database schema and generate SQL queries based on natural language input.
  - The environment uses SQLServer as an example but can be easily adapted to other databases.
  - The LLM can execute the following operations when queried:
-   - `RESPONSE_TEXT` - Returns a text response based on the query.
-   - `RESPONSE_SQL` - Returns a SQL to be presented to the user.
-   - `INTERNAL_SQL` - Query to the database with result being returned to the LLM for further analysis and actions (the LLM can perform as many of these as required until a response is prepared).
+   - `text` - Returns a text response based on the query.
+   - `sql` - Returns a SQL to be presented to the user.
+   - `internal-sql` - Query to the database with result being returned to the LLM for further analysis and actions (the LLM can perform as many of these as required until a response is prepared).
  - Diagram
  - ``````mermaid
    graph TD;

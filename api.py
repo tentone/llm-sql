@@ -1,15 +1,16 @@
 from fastapi import FastAPI
 import uvicorn
 import config
-
+import llm
 class API:
     cfg: config.Config
 
     app: FastAPI
 
-    def __init__(self, cfg: config.Config):
+    def __init__(self, cfg: config.Config, l: llm.LLMModel):
         self.cfg = cfg
         self.app = FastAPI()
+        self.l = l
         self.setup_routes()
 
     def setup_routes(self):

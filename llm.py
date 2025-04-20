@@ -1,8 +1,7 @@
 import json
 import uuid
-
-import openai
 import config
+import database
 from openai import OpenAI
 
 class LLMChat:
@@ -33,9 +32,11 @@ class LLMChat:
             "content": message
         })
 
-    def prompt(self, message: str = None)-> None:
+    def prompt(self, message: str = None)-> any:
         """
         Prompt the model, add message to chat and generate response.
+
+        Return the message generated as JSON
         """
 
         if message is not None:
@@ -52,17 +53,29 @@ class LLMChat:
         )
 
         # Process the streamed response
-        for event in stream:
-            print(event)
+        result = ""
+        message = ""
+        for chunk in stream:
+            if len(chunk.choices) > 0:
+                content = chunk.choices[0].delta.content
+                print(chunk.choices[0])
+                # reason = chunk.choices[0].delta.finish_reason
+                if content is None: # or reason == 'stop':
+                    break
 
-        # print("\n\nParsed JSON:")
-        # try:
-        #     json_data = json.loads(full_reply)
-        #     print(json.dumps(json_data, indent=2))
-        # except json.JSONDecodeError as e:
-        #     print("Error parsing JSON:", e)
+                print(content, end='', flush=True)
+                result += content
 
-class LLM:
+        print(f"\n\nResult is {result}")
+
+        print("\n\nParsed JSON:")
+        try:
+            json_data = json.loads(result)
+            return json_data
+        except json.JSONDecodeError as e:
+            print("Error parsing JSON:", e)
+
+class LLMModel:
 
     # Configuration
     cfg: config.Config = None
@@ -76,7 +89,7 @@ class LLM:
     # List of chats
     chats: list[LLMChat] = []
 
-    def __init__(self, cfg: config.Config, model: str = "gpt-4o"):
+    def __init__(self, cfg: config.Config, db: database.Database, model: str = "gpt-4o"):
         self.cfg = cfg
         self.client = OpenAI(api_key=cfg.llm.token)
         self.model = model
