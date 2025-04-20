@@ -1,4 +1,6 @@
+import datetime
 import re
+import struct
 import pypyodbc
 import config
 
@@ -21,6 +23,18 @@ class Database:
         # Connect to the database using the configuration
         self.conn = pypyodbc.connect(connection)
         
+        def HandleHierarchyId(v):
+            return ''
+
+        self.conn.add_output_converter(-151, HandleHierarchyId)
+        
+        def HandleDatetimeoffset(dto_value):
+            tup = struct.unpack("<6hI2h", dto_value)  # e.g., (2017, 3, 16, 10, 35, 18, 500000000, -6, 0)
+            return datetime.datetime(tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6] // 1000,
+                            datetime.timezone(datetime.timedelta(hours=tup[7], minutes=tup[8])))
+
+        self.conn.add_output_converter(-155, HandleDatetimeoffset)
+
 
     def close(self)-> None:
         if self.conn:
