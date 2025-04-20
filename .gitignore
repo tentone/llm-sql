@@ -174,3 +174,7 @@ cython_debug/
 .pypirc
 
 poetry.lock
+
+structure.txt
+
+config.json

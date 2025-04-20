@@ -8,6 +8,8 @@ cfg.load('config.json')
 db = database.Database(cfg)
 db.connect()
 
+
+
 structure = db.database_structure()
 print(structure)
 
