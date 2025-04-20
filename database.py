@@ -125,7 +125,7 @@ class Database:
                 })
 
         # Prepare the prompt for the LLM
-        prompt = "The database has the following tables and columns:\n\n"
+        prompt = "\n"
         for table, columns in tables.items():
             prompt += f"{table}:\n"
             for column in columns:
