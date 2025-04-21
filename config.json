@@ -1,4 +1,5 @@
 {
+    "debug": false,
     "database": {
         "host": "localhost",
         "port": 5432,
@@ -8,10 +9,6 @@
         "exclude": ["sys.*"],
         "include": [],
         "sampleData": true
-    },
-    "http": {
-        "host": "0.0.0.0",
-        "port": 8080
     },
     "openai": {
         "token": ""
