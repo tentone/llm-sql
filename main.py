@@ -1,15 +1,18 @@
 import os
+import re
 import database
 import config
+
 import logging
 import llm
-import api
 
-logging.basicConfig(level=logging.DEBUG)
 
 logging.info("Read configuration file")
 cfg = config.Config()
 cfg.load('config.json')
+
+if cfg.debug:
+    logging.basicConfig(level=logging.DEBUG)
 
 logging.info("Connecting to database")
 db = database.Database(cfg)
@@ -34,11 +37,40 @@ l = llm.LLMModel(cfg, "gpt-4o-mini")
 
 c = l.create_chat()
 c.dev_message(initial_prompt + structure)
-c.prompt("Hello")
-c.prompt("Get me all assets")
 
-logging.info("Starting API service")
-api = api.API(cfg, l)
-api.run()
+output = ""
+
+while True:
+    message = input("\n\nMessage (blank to exit): ")
+    if len(message) == 0:
+        break
+    
+    output = ""
+    printed = ""
+
+    def on_chunk(content: str)-> None:
+        global output
+        global printed
+
+        output += content
+        partial = re.search(r"\"message\"\s*:\s*\"([^\"]*)\"?", output)
+        if partial is not None:
+            groups = partial.groups()
+            if len(groups)> 0:
+                group = groups[0]
+                
+                substring = group[len(printed):]
+                printed = group 
+                print(substring, end="", flush=True)
+    
+    print("Assistant: ", end="")
+    result = c.prompt(message, on_chunk)
+    
+    if result['type'] == 'sql':
+        print(f"\nSQL query to get the data: {result['query']}")
+
+        table = db.query(result['query'])
+        print(table)
+
 
 

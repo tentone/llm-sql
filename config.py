@@ -11,16 +11,18 @@ class DatabaseConfig:
     exclude = []
     sample_data = False
 
-class HttpConfig:
-    port = 8080
-    host = "0.0.0.0"
-
 class LLMConfig:
     token = None
 
 class Config:
+    # Debug flag
+    debug: bool = False
+
     # Database configuration
     database: DatabaseConfig = None
+
+    # OpenAI config
+    llm: LLMConfig = None
 
     def __init__(self):
         self.database = None
@@ -29,6 +31,8 @@ class Config:
         # Load the configuration from the file
         with open(config_file, 'r') as file:
             config = json.load(file)
+
+            self.debug = config['debug']
 
             self.database = DatabaseConfig()
             self.database.host = config['database']['host']
@@ -39,10 +43,6 @@ class Config:
             self.database.include = config['database']['include']
             self.database.exclude = config['database']['exclude']
             self.database.sample_data = config['database']['sampleData']
-
-            self.http = HttpConfig()
-            self.http.port = config['http']['port']
-            self.http.host = config['http']['host']
 
             self.llm = LLMConfig()
             self.llm.token = config['openai']['token']

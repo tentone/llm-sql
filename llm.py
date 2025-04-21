@@ -1,7 +1,7 @@
 import json
+from typing import Callable
 import uuid
 import config
-import database
 from openai import OpenAI
 
 class LLMChat:
@@ -9,7 +9,7 @@ class LLMChat:
     messages: list[map] = []
 
     # ID of the chat
-    id: uuid.uuid4 = None
+    id: uuid.UUID = None
 
     # LLM client reference
     llm: any = None
@@ -32,7 +32,7 @@ class LLMChat:
             "content": message
         })
 
-    def prompt(self, message: str = None)-> any:
+    def prompt(self, message: str = None, on_chunk: Callable = None)-> any:
         """
         Prompt the model, add message to chat and generate response.
 
@@ -57,32 +57,15 @@ class LLMChat:
         for chunk in stream:
             if len(chunk.choices) > 0:
                 content = chunk.choices[0].delta.content
-                # reason = chunk.choices[0].delta.finish_reason
-                if content is None: # or reason == 'stop':
+                if content is None:
                     break
-
-                print(content, end='', flush=True)
+                
+                if on_chunk is not None:
+                    on_chunk(content)
                 result += content
 
         json_data = json.loads(result)
         return json_data
-    
-    def process(self, message: str)-> any:
-        """
-        Query the LLM and process the result returned.
-        """
-
-        result = self.prompt(message)
-
-        if result['type'] == 'text':
-            return result
-        elif result['type'] == 'sql':
-            # Query the database for results
-
-
-            pass
-        
-        raise Exception('Result type is unknown')
 
 class LLMModel:
 
@@ -93,12 +76,12 @@ class LLMModel:
     client: OpenAI = None
 
     # Model to be used
-    model: str = "gpt-4o"
+    model: str = "gpt-4o-mini"
 
     # List of chats
     chats: list[LLMChat] = []
 
-    def __init__(self, cfg: config.Config, db: database.Database, model: str = "gpt-4o"):
+    def __init__(self, cfg: config.Config, model: str = "gpt-4o"):
         self.cfg = cfg
         self.client = OpenAI(api_key=cfg.llm.token)
         self.model = model
@@ -119,5 +102,22 @@ class LLMModel:
         self.chats.append(chat)
         return chat
     
-    
+    def delete_chat(self, id: uuid.UUID)-> None:
+        """
+        Delete chat by id
+        """
+
+        chat = self.get_chat(id)
+        self.chats.remove(chat)
+
+
+    def get_chat(self, id: uuid.UUID)-> LLMChat:
+        """
+        Get chat by id.
+        """
+        for i in range(len(self.chats)):
+            if self.chats[i].id == id:
+                return self.chats[i]
+        
+        raise Exception("Chat not found in the model")
 

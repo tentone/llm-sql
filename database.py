@@ -41,15 +41,57 @@ class Database:
             self.conn.close()
             self.conn = None
     
-    def query(self, sql: str)-> list[any]:
+    def query(self, sql: str)-> str:
+        """
+        Execute query agains the database
+        
+        Prevent execution of destructive statements
+        """
         if not self.conn:
             raise Exception("Database connection is not established.")
         
         cursor = self.conn.cursor()
         cursor.execute(sql)
+
+        if re.search(r"\b(DROP|DELETE|INSERT|UPDATE|ALTER)\b", sql, re.IGNORECASE):
+            raise ValueError("Unsafe query detected.")
+        
         result = cursor.fetchall()
+
+        output = self.format_db_table(cursor, result)
+
         cursor.close()
-        return result
+        
+        return output
+
+    
+    def format_db_table(self, cursor, rows):
+        """
+        Formats a list of rows returned by database as a readable table
+        """
+        if not rows:
+            return "No results found."
+
+        # Get column names
+        column_names = [column[0] for column in cursor.description]
+
+        # Determine column widths
+        col_widths = [len(name) for name in column_names]
+        for row in rows:
+            for idx, val in enumerate(row):
+                col_widths[idx] = max(col_widths[idx], len(str(val)))
+
+        # Create format string
+        row_format = " | ".join("{:<" + str(width) + "}" for width in col_widths)
+
+        # Build table string
+        lines = []
+        lines.append(row_format.format(*column_names))
+        lines.append("-+-".join("-" * width for width in col_widths))
+        for row in rows:
+            lines.append(row_format.format(*[str(cell) for cell in row]))
+
+        return "\n".join(lines)
 
     def database_structure(self)-> None:
         """
