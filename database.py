@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 import struct
 import pypyodbc
@@ -18,7 +19,7 @@ class Database:
         driver = "ODBC Driver 18 for SQL Server"
         connection = f"DRIVER={driver};SERVER={self.cfg.database.host},{self.cfg.database.port};DATABASE={self.cfg.database.database};UID={self.cfg.database.user};PWD={self.cfg.database.password}"
 
-        print(f"Connecting to database {connection}")
+        logging.info(f"Connecting to database {connection}")
 
         # Connect to the database using the configuration
         self.conn = pypyodbc.connect(connection)
