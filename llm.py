@@ -15,7 +15,7 @@ class LLMChat:
     llm: any = None
 
     # Temperature of the chat (lower means less imagination)
-    temperature: float = 0.3
+    temperature: float = 0.4
 
     def __init__(self, llm: any):
         self.id = uuid.uuid4()
@@ -54,11 +54,9 @@ class LLMChat:
 
         # Process the streamed response
         result = ""
-        message = ""
         for chunk in stream:
             if len(chunk.choices) > 0:
                 content = chunk.choices[0].delta.content
-                print(chunk.choices[0])
                 # reason = chunk.choices[0].delta.finish_reason
                 if content is None: # or reason == 'stop':
                     break
@@ -66,14 +64,25 @@ class LLMChat:
                 print(content, end='', flush=True)
                 result += content
 
-        print(f"\n\nResult is {result}")
+        json_data = json.loads(result)
+        return json_data
+    
+    def process(self, message: str)-> any:
+        """
+        Query the LLM and process the result returned.
+        """
 
-        print("\n\nParsed JSON:")
-        try:
-            json_data = json.loads(result)
-            return json_data
-        except json.JSONDecodeError as e:
-            print("Error parsing JSON:", e)
+        result = self.prompt(message)
+
+        if result['type'] == 'text':
+            return result
+        elif result['type'] == 'sql':
+            # Query the database for results
+
+
+            pass
+        
+        raise Exception('Result type is unknown')
 
 class LLMModel:
 

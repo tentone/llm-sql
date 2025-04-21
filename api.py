@@ -20,6 +20,7 @@ class API:
         @self.app.get("/")
         def hello():
             return {"Hello": "World"}
+    
 
     def run(self):
         """

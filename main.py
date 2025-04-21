@@ -5,6 +5,8 @@ import logging
 import llm
 import api
 
+logging.basicConfig(level=logging.DEBUG)
+
 logging.info("Read configuration file")
 cfg = config.Config()
 cfg.load('config.json')
@@ -29,14 +31,14 @@ initial_prompt = f.read()
 
 logging.info("Connect to OpenAPI service")
 l = llm.LLMModel(cfg, "gpt-4o-mini")
-# l.models()
 
 c = l.create_chat()
 c.dev_message(initial_prompt + structure)
 c.prompt("Hello")
+c.prompt("Get me all assets")
 
 logging.info("Starting API service")
-api = api.API(cfg)
+api = api.API(cfg, l)
 api.run()
 
 
